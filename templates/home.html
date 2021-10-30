@@ -1,0 +1,328 @@
+{% extends 'base.html' %}
+{% block title %}
+Home
+{% endblock title %}
+
+{% block style %}
+<style>
+* {
+  box-sizing: border-box;
+}
+
+/* Float four columns side by side */
+.small-column {
+  float: left;
+  width: 23%;
+  padding: 0 10px;
+}
+
+.big-column {
+  float: left;
+  width: 50%;
+  padding: 0 10px;
+}
+
+.huge-column {
+  float: left;
+  width: 73%;
+  padding: 0 10px;
+}
+
+/* Remove extra left and right margins, due to padding */
+.row {margin: 0 -5px;}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Responsive columns */
+@media screen and (max-width: 600px) {
+  .column {
+    width: 100%;
+    display: block;
+    margin-bottom: 20px;
+  }
+}
+
+/* Style the counter cards */
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  text-align: center;
+  background-color: #f1f1f1;
+}
+
+.button {
+  background-color: white;
+  color: black;
+  padding: 5px;
+  border: 2px solid #555555;
+}
+
+#transactions {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#transactions td, #transactions th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#transactions tr:nth-child(even){background-color: #f2f2f2;}
+
+#transactions tr:hover {background-color: #ddd;}
+
+#transactions th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #04AA6D;
+  color: white;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<br>
+
+<div class="row">
+  <div class="small-column">
+    <div class="card">
+        <h1 class="card-title">Balance</h1>
+        <h1 id="balance" class="card-text">{{ balance }}</h1>
+    </div>
+  </div>
+  <div class="small-column">
+    <div class="card">
+        <h2 class="card-title">Welcome, {{ full_name| safe | capfirst }}</h2>
+        <h3 class="card-text">You have {{ num_transactions }} new notifications</h3>
+    </div>
+  </div>
+  <div class="big-column">
+    <div class="card">
+        {% if len != 0 %}
+        <table id="transactions">
+            <tr>
+                <th>Sender</th>
+                <th>Receiver</th>
+                <th>Amount</th>
+                <th>Description</th>
+                <th>Info</th>
+            </tr>
+            {% for transaction in transactions %}
+            <tr>
+                <td>{{ transaction.payer.first_name|safe|capfirst }} {{ transaction.payer.last_name|safe|capfirst }}</td>
+                <td>{{ transaction.receiver.first_name|safe|capfirst }} {{ transaction.receiver.last_name|safe|capfirst }}</td>
+                <td>${{ transaction.amount }}</td>
+                <td> {{ transaction.description|safe }} </td>
+                <td> <a href="{% url 'transaction' transaction.id %}">Info</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        No Transactions
+        <br>
+        <br>
+        {% endif %}
+        <br>
+        <a class="button" href="{% url 'runTransaction' %}">Create a Transaction</a>
+        <a class="button" href="{% url 'transactions' %}">View all Transactions</a>
+    </div>
+  </div>
+  
+</div>
+
+<script>
+balance = document.getElementById('balance')
+console.log(balance)
+if (parseFloat(balance.textContent) < 10) {
+    balance.style.color = 'red'
+} else if (parseFloat(balance.textContent) < 50) {
+    balance.style.color = 'orange'
+} else if (parseFloat(balance.textContent) >= 50) {
+    balance.style.color = 'green'
+}
+</script>
+<br>
+<div class="row">
+  <div class="small-column">
+    <div class="card">
+        <h1 class="card-title">Information</h1>
+        <p class="card-text"> Email: {{ email }}</p>
+        <p class="card-text"> Username: {{ username }}</p>
+        <p class="card-text"> Hello {{ first_name|safe|capfirst }} {{ last_name|safe|capfirst }}!</p>
+        <br>
+        <a class="button" href="{% url 'edit-profile' %}">Edit Profile</a>
+    </div>
+  </div>
+  <div class="huge-column">
+    <div class="card">
+        {% if job_len != 0 %}
+        <table id="transactions">
+            <tr>
+                <th>Name</th>
+                <th>Employer</th>
+                <th>Pay</th>
+                <th>Minutes</th>
+                <th>Availibility</th>
+                <th>Workers</th>
+                <th>Info</th>
+                <th>Edit</th>
+            </tr>
+            {% for job in jobs %}
+            <tr>
+                <td>{{ job.name }}</td>
+                <td>{{ job.employer.first_name|safe|capfirst }} {{ job.employer.last_name|safe|capfirst }}</td>
+                <td>${{ job.pay }}</td>
+                <td>{{ job.minutes }}</td>
+                <td>{{ job.get_availability_display }}</td>
+                <td>
+                {% for person in job.workers.all %}
+                  <p>{{ person.first_name|safe|capfirst }} {{ person.last_name|safe|capfirst }}</p>
+                {% empty %}
+                  <p class='card-text'>No Workers</p>
+                {% endfor %}
+      </td>
+                <td> <a href="{% url 'view_job' job.id %}">Info</a></td>
+                <td> <a href="{% url 'job_edit' job.id %}">Edit</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        No Jobs
+        <br>
+        <br>
+        {% endif %}
+        <br>
+        <a class="button" href="{% url 'create_job' %}">Create a Job</a>
+        <a class="button" href="{% url 'jobs' %}">View all your Jobs</a>
+        <a class="button" href="{% url 'search_jobs' %}">Search new Jobs</a>
+    </div>
+  </div>
+  
+</div>
+<br>
+
+<div class="row">
+  <div class="large-column">
+    <div class="card">
+        <h2>Products</h2>
+        {% if product_len != 0 %}
+        <table id="transactions">
+            <tr>
+                <th>Name</th>
+                <th>Seller</th>
+                <th>Price</th>
+                <th>Items Left</th>
+                <th>Info</th>
+                <th>Edit</th>
+            </tr>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.name|safe }}</td>
+                <td>{{ product.seller.first_name|safe|capfirst }} {{ product.seller.last_name|safe|capfirst }}</td>
+                <td>${{ product.price }}</td>
+                <td>{{ product.availability }}</td>
+                
+                <td> <a href="{% url 'view_product' product.id %}">Info</a></td>
+                <td> <a href="{% url 'product_edit' product.id %}">Edit</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        No Products
+        {% endif %}
+        <br>
+        <a class="button" href="{% url 'create_product' %}">Create a Product</a>
+        <a class="button" href="{% url 'products' %}">View all your Products</a>
+        <a class="button" href="{% url 'search_products' %}">View the Shop</a>
+    </div>
+  </div>
+  
+</div>
+
+<br>
+<br>
+
+<div class="row">
+  <div class="large-column">
+    <div class="card">
+        <h2>Latest Comments</h2>
+        {% if comment_len != 0 %}
+        <table id="transactions">
+            <tr>
+                <th>Commenter</th>
+                <th>Comment</th>
+                <th>Time</th>
+                <th>Job</th>
+                <th>Info</th>
+            </tr>
+            {% for comment, Job in comments.items %}
+            <tr>
+                <td>{{ comment.commenter.first_name|safe|capfirst }} {{ comment.commenter.last_name|safe|capfirst }}</td>
+                <td>{{ comment.comment|safe }}</td>
+                <td>{{ comment.time }}</td>
+                
+                <td>{{ Job.name }}</td>
+                <td> <a href="{% url 'view_job' Job.id %}">Info</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        No Comments
+        {% endif %}
+    </div>
+  </div>
+  
+</div>
+
+<br>
+<br>
+
+<div class="row">
+  <div class="large-column">
+    <div class="card">
+        <h2>Latest Reviews</h2>
+        {% if review_len != 0 %}
+        <table id="transactions">
+            <tr>
+                <th>Reviewer</th>
+                <th>Review</th>
+                <th>Stars</th>
+                <th>Product</th>
+                <th>Info</th>
+            </tr>
+            {% for review, Product in reviews.items %}
+            <tr>
+                <td>{{ review.commenter.first_name|safe|capfirst }} {{ review.commenter.last_name|safe|capfirst }}</td>
+                <td>{{ review.comment|safe }}</td>
+                <td>{{ review.stars }}</td>
+                
+                <td>{{ Product.name }}</td>
+                <td> <a href="{% url 'view_product' Product.id %}">Info</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        No Reviews
+        {% endif %}
+    </div>
+  </div>
+  
+</div>
+
+<br>
+<br>
+
+<script>
+  {% if notification %}
+    alert('{{ notification }}')
+  {% endif %}
+</script>
+{% endblock %}

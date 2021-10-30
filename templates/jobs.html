@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Jobs
+{% endblock title %}
+
+{% block content %}
+{% if job_len != 0 %}
+<table id="transactions">
+    <tr>
+        <th>Name</th>
+        <th>Employer</th>
+        <th>Description</th>
+        <th>Pay</th>
+        <th>Minutes</th>
+        <th>Availibility</th>
+        <th>Workers</th>
+        <th>Info</th>
+        <th>Edit</th>
+    </tr>
+    {% for job in jobs %}
+    <tr>
+        <td>{{ job.name|safe }}</td>
+        <td>{{ job.employer.first_name|safe|capfirst }} {{ job.employer.last_name|safe|capfirst }}</td>
+        <td>{{ job.description|safe }}</td>
+        <td>${{ job.pay }}</td>
+        <td>{{ job.minutes }}</td>
+        <td>{{ job.get_availability_display }}</td>
+        <td>
+        {% for person in job.workers.all %}
+            <p>{{ person.first_name|safe|capfirst }} {{ person.last_name|safe|capfirst }}</p>
+        {% empty %}
+            <p class='card-text'>No Workers</p>
+        {% endfor %}
+</td>
+        <td> <a href="{% url 'view_job' job.id %}">Info</a></td>
+        <td> <a href="{% url 'job_edit' job.id %}">Edit</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+No Jobs
+<br>
+<br>
+{% endif %}
+<br>
+<a class="button" href="{% url 'create_job' %}">Create a Job</a>
+<a class="button" href="{% url 'search_jobs' %}">Search new Jobs</a>
+
+{% endblock %}

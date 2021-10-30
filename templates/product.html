@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}
+Product
+{% endblock title %}
+
+
+
+{% block content %}
+    <h1>Product</h1>
+
+    <h2>Name: {{product.name}}</h2>
+    <h3>Employer: {{ product.seller.first_name|safe|capfirst }} {{ product.seller.last_name|safe|capfirst }}</h3>
+    <h3>Pay ${{ product.price }}</h3>
+    <h3>Number of Products Available {{ product.availability }}</h3>
+    <h3>Description: {{ product.description|safe }} </h3>
+
+    {% for comment in product.reviews.all %}
+      <br>
+      <p>Author {{ comment.commenter.first_name|safe|capfirst }} {{ comment.commenter.last_name|safe|capfirst }}</p>
+      <p>{{ comment.stars }}</p>
+      <p>{{ comment.comment|safe }}</p>
+      <p>Posted on {{ comment.time }}</p>
+    {% empty %}
+    No Reviews
+    {% endfor %}
+    <br>
+    Write a Review
+
+    {% if form_is_possible %}
+    <form action="" method="post"><input type='hidden'/>
+      {%csrf_token %}
+
+      {% for field in form.visible_fields %}
+  <div class="form-group">
+    {{ field.label_tag }}
+
+    {% if form.is_bound %}
+      {% if field.errors %}
+        {% render_field field class="form-control is-invalid" %}
+        {% for error in field.errors %}
+          <div class="invalid-feedback" style="color: rgb(235, 0, 0); font-size: smaller;">
+            {{ error }}
+          </div>
+        {% endfor %}
+      {% else %}
+        {% render_field field class="form-control is-valid" %}
+      {% endif %}
+    {% else %}
+      {% render_field field class="form-control" %}
+    {% endif %}
+
+    {% if field.help_text %}
+      <small class="form-text text-muted">{{ field.help_text }}</small>
+    {% endif %}
+  </div>
+{% endfor %}
+
+    <div class="form-group">
+      <button type="submit" class="btn btn-default ">
+        Post
+      </button>
+
+        </div>
+
+      </form>
+{% endif %}
+    <br>
+    <br>
+
+    <a class="button" href="{% url 'buy_product' product.id %}">Buy</a>
+    <a class="button" href="{% url 'delete_product' product.id %}">Delete</a>
+{% endblock content %}
+

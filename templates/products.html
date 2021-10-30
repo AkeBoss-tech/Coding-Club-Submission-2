@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Products
+{% endblock title %}
+
+{% block content %}
+{% if product_len != 0 %}
+<table id="transactions">
+    <tr>
+        <th>Name</th>
+        <th>Seller</th>
+        <th>Description</th>
+        <th>Price</th>
+        <th>Items Left</th>
+        <th>Info</th>
+        <th>Edit</th>
+    </tr>
+    {% for product in products %}
+    <tr>
+        <td>{{ product.name|safe }}</td>
+        <td>{{ product.seller.first_name|safe|capfirst }} {{ product.seller.last_name|safe|capfirst }}</td>
+        <td>{{ product.description|safe }}</td>
+        <td>${{ product.price }}</td>
+        <td>{{ product.availability }}</td>
+        
+        <td> <a href="{% url 'view_product' product.id %}">Info</a></td>
+        <td> <a href="{% url 'product_edit' product.id %}">Edit</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+No Products
+{% endif %}
+<br>
+<br>
+<br>
+<a class="button" href="{% url 'create_product' %}">Create a product</a>
+<a class="button" href="{% url 'search_products' %}">Search new products</a>
+
+{% endblock %}

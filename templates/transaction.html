@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Transaction
+{% endblock title %}
+
+
+
+{% block content %}
+    <h1>Transaction</h1>
+
+    <h3>Sender {{ transaction.payer.first_name|safe|capfirst }} {{ transaction.payer.last_name|safe|capfirst }}</h3>
+    <h3>Receiver {{ transaction.receiver.first_name|safe|capfirst }} {{ transaction.receiver.last_name|safe|capfirst }}</h3>
+    <h3>Amount ${{ transaction.amount }}</h3>
+    <h3>Description: {{ transaction.description|safe }} </h3>
+    <h3>Time: {{ time }} </h3>
+    <h3>Read: {{ transaction.get_read_display }} </h3>
+{% endblock content %}
+

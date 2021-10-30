@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block title %}
+Product Search
+{% endblock title %}
+
+{% block style %}
+<style>
+* {
+  box-sizing: border-box;
+}
+
+/* Float four columns side by side */
+.small-column {
+  float: left;
+  width: 23%;
+  padding: 0 10px;
+}
+
+.big-column {
+  float: left;
+  width: 50%;
+  padding: 0 10px;
+}
+
+.huge-column {
+  float: left;
+  width: 73%;
+  padding: 0 10px;
+}
+
+/* Remove extra left and right margins, due to padding */
+.row {margin: 0 -5px;}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Responsive columns */
+@media screen and (max-width: 600px) {
+  .column {
+    width: 100%;
+    display: block;
+    margin-bottom: 20px;
+  }
+}
+
+/* Style the counter cards */
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  text-align: center;
+  background-color: #f1f1f1;
+}
+
+.button {
+  background-color: white;
+  color: black;
+  padding: 5px;
+  border: 2px solid #555555;
+}
+
+#transactions {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#transactions td, #transactions th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#transactions tr:nth-child(even){background-color: #f2f2f2;}
+
+#transactions tr:hover {background-color: #ddd;}
+
+#transactions th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #04AA6D;
+  color: white;
+}
+
+footer {
+  width:100%;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<br>
+
+{% for product in products %}
+<div class="small-column">
+  <div class="card">
+      <h1 class="card-title">{{ product.name }}</h1>
+      <p class="card-text">Seller: {{ product.seller.first_name|safe|capfirst }} {{ product.employer.last_name|safe|capfirst }}</p>
+
+      <p class='card-text'>Price ${{ product.price }}</p>
+      <p class='card-text'>Items Left {{ product.availability }}</p>
+      <br>
+      <a class="button" href="{% url 'buy_product' product.id %}">Buy</a>
+      <a class="button" href="{% url 'view_product' product.id %}">More Info</a>
+
+  </div>
+</div>
+{% empty %}
+No Available Products
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}
+Confirm
+{% endblock title %}
+{% block content %}
+  <h2>Are you Sure You want to pay workers?</h2>
+  <br>
+  {{ text }}
+  <p>Bank Stimulus {{ stimulus }}</p>
+  <p>You pay {{ price }} plus any bonuses</p>
+  <br>
+  <form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit">Pay Workers</button>
+  </form>
+
+<p>For Custom bonuses please pay separately</p>
+
+<a class="button" href="{% url 'runTransaction' %}">Create a Transaction</a>
+<br>
+<br>
+<script>
+    {% if notification %}
+    alert('{{ notification }}')
+    {% endif %}
+    </script>
+<br>
+<br>
+<br>
+<br>
+{% endblock %}
